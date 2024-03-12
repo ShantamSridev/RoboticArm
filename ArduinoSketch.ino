@@ -12,7 +12,7 @@ int servoPins[numServos] = {0, 1, 2, 3, 4}; // Change these pins according to yo
 // Variable to store the last servo positions
 int lastServoPositions[numServos];
 
-unsigned long DelayDuration = 1000;
+unsigned long DelayDuration = 700;
 unsigned long PreviousTime = 0;
 unsigned long CurrentTime = 0;
 
