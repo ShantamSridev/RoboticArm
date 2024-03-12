@@ -9,7 +9,7 @@ from Plotter.GenericPlot import *
 from AeroPy.TrignoBase import *
 from AeroPy.DataManager import *
 
-##OUR CODE###################################
+
 ## for serial commands
 import serial
 import time
@@ -22,13 +22,13 @@ window_size = 20
 data_window = []  # Initialize the rolling window with an empty list
 
 
-##OUR CODE###################################
+
 
 clr.AddReference("System.Collections")
 
 app.use_app('PySide6')
 
-##OUR CODE###################################
+
 def write_servos(angles):
     """
     Send a command to the Arduino to move servos to the specified angles.
@@ -62,7 +62,7 @@ def update_sma(new_value, data_window, window_size):
     return sum(data_window) / len(data_window)
 
 
-##OUR CODE###################################
+
 
 class PlottingManagement():
     def __init__(self, collect_data_window, metrics, emgplot=None):
@@ -105,21 +105,19 @@ class PlottingManagement():
                 incData = self.emg_plot.popleft()  # Data at time T-1
                 try:
                     self.outData = list(np.asarray(incData, dtype='object')[tuple([self.base.emgChannelsIdx])])
-                    ##OUR CODE###################################
+
                     dataArr = [self.emg_plot[0][i][0] for i in self.base.emgChannelsIdx]
                     dataRaw = abs(dataArr[0])
                     sma_value = update_sma(dataRaw, data_window, window_size)
                     print(sma_value)
                     multiplier = 2
                     mult = sma_value*multiplier
-                    if (mult>0.1 and mult<0.6):
-                        #print("FLEXED")
-                        #print(self.inc)
-                        #self.inc += 1
+                    if (mult>0.1 and mult<0.6): ## if the signal is higher than the threshold for open hand, but lower than the very high spikes seen within glitches -- close the robot hand
                         thresh_reached()
-                    else:
+                        ## tune the values within the if statement
+                    else: ## otherwise, leave the hand open
                         below_thresh()
-                    ##OUR CODE###################################
+
                 except IndexError:
                     print("Index Error Occurred: vispyPlot()")
                 if self.base.emgChannelsIdx and self.outData[0].size > 0:
