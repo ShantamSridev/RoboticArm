@@ -9,9 +9,6 @@ Servo servos[numServos];
 // Define the pins where the servos are connected
 int servoPins[numServos] = {0, 1, 2, 3, 4}; // Change these pins according to your setup
 
-// Variable to store the last servo positions
-int lastServoPositions[numServos];
-
 unsigned long DelayDuration = 700;
 unsigned long PreviousTime = 0;
 unsigned long CurrentTime = 0;
@@ -23,7 +20,6 @@ void setup() {
     // Attach each servo to its pin
     for(int i = 0; i < numServos; i++) {
         servos[i].attach(servoPins[i]);
-        lastServoPositions[i] = -1; // Initialize last servo positions to invalid values
     }
 
     for (int i = 0; i < numServos; i++) {
@@ -56,7 +52,6 @@ void controlServos(String command) {
     }
     
     CurrentTime = millis();
-    // Update servo positions if they have changed
     
     if ((CurrentTime-PreviousTime)>DelayDuration) {
         for (int i = 0; i < numServos; i++) {
