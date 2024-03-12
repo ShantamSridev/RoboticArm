@@ -9,6 +9,13 @@ Servo servos[numServos];
 // Define the pins where the servos are connected
 int servoPins[numServos] = {0, 1, 2, 3, 4}; // Change these pins according to your setup
 
+// Variable to store the last servo positions
+int lastServoPositions[numServos];
+
+unsigned long DelayDuration = 1000;
+unsigned long PreviousTime = 0;
+unsigned long CurrentTime = 0;
+
 void setup() {
     // Start serial communication
     Serial.begin(9600);
@@ -16,7 +23,12 @@ void setup() {
     // Attach each servo to its pin
     for(int i = 0; i < numServos; i++) {
         servos[i].attach(servoPins[i]);
+        lastServoPositions[i] = -1; // Initialize last servo positions to invalid values
     }
+
+    for (int i = 0; i < numServos; i++) {
+            servos[i].write(180); // Set the servo position
+        }
 }
 
 void loop() {
@@ -28,9 +40,10 @@ void loop() {
 }
 
 void controlServos(String command) {
-    // Expected command format "S0:90,S1:45,S2:180,S3:90,S4:10"
+    // Decode the incoming command and store it as a dictionary
+    int servoPositions[numServos];
     for (int i = 0; i < numServos; i++) {
-        // Construct the search term for current servo (e.g., "S0:", "S1:", etc.)
+        // Construct the search term for the current servo (e.g., "S0:", "S1:", etc.)
         String searchTerm = "S" + String(i) + ":";
         int index = command.indexOf(searchTerm);
 
@@ -38,8 +51,18 @@ void controlServos(String command) {
             int start = index + searchTerm.length();
             int end = command.indexOf(',', start);
             if (end == -1) end = command.length(); // If this is the last command
-            int angle = command.substring(start, end).toInt(); // Get the angle value
-            servos[i].write(angle); // Set the servo position
+            servoPositions[i] = command.substring(start, end).toInt(); // Get the angle value
         }
+    }
+    
+    CurrentTime = millis();
+    // Update servo positions if they have changed
+    
+    if ((CurrentTime-PreviousTime)>DelayDuration) {
+        for (int i = 0; i < numServos; i++) {
+            servos[i].write(servoPositions[i]); // Set the servo position
+        }
+        // Introduce a delay without blocking the code execution
+        PreviousTime = millis();
     }
 }
