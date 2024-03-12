@@ -21,9 +21,6 @@ print("serial setup successful")
 window_size = 20
 data_window = []  # Initialize the rolling window with an empty list
 
-
-
-
 clr.AddReference("System.Collections")
 
 app.use_app('PySide6')
@@ -108,9 +105,9 @@ class PlottingManagement():
 
                     dataArr = [self.emg_plot[0][i][0] for i in self.base.emgChannelsIdx]
                     dataRaw = abs(dataArr[0])
-                    sma_value = update_sma(dataRaw, data_window, window_size)
+                    sma_value = update_sma(dataRaw, data_window, window_size) #filtering to prevent robot hand jitter
                     print(sma_value)
-                    multiplier = 2
+                    multiplier = 2 #gives finer therhold control
                     mult = sma_value*multiplier
                     if (mult>0.1 and mult<0.6): ## if the signal is higher than the threshold for open hand, but lower than the very high spikes seen within glitches -- close the robot hand
                         thresh_reached()
